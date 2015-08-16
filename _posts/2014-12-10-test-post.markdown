@@ -1,0 +1,8 @@
+---
+layout: post
+title:  "Test Post"
+date:   2015-08-16
+---
+
+<p class="intro"><span class="dropcap">T</span>This is a test post. For testing my first blog.</p>
+

@@ -1,0 +1,26 @@
+title: White leaf
+description: White leaf is something we can write whatever we want
+
+url: http://anirudh708.github.com/white-leaf
+baseurl: ""
+paginate_path: "blog/page:num/"
+permalink: blog/:title/
+
+markdown: redcarpet
+highlighter: pygments
+paginate: 5
+
+navigation:
+ - title: Home
+   url: /index.html
+ - title: About
+   url: /about
+ - title: Contact
+   url: /contact
+
+social:
+   github: anirudh708
+   twitter: w_anirudh
+   facebook: rockstreetani
+   email: w.anirudh92@gmail.com
+
