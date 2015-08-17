@@ -2,7 +2,8 @@
 layout: post
 title:  "Test Post"
 date:   2015-08-16
+tags: [tag1,tag2,tag3]
 ---
 
-<p class="intro"><span class="dropcap">T</span>This is a test post. For testing my first blog.</p>
+<p class="intro"><span class="dropcap">T</span>This is a test post. For testing my first blog.This is a test post. For testing my first blog.This is a test post. For testing my first blog.This is a test post. For testing my first blog.This is a test post. For testing my first blog.This is a test post. For testing my first blog.This is a test post. For testing my first blog.This is a test post. For testing my first blog.</p>
 

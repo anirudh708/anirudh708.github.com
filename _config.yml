@@ -13,10 +13,13 @@ paginate: 5
 navigation:
  - title: Home
    url: /index.html
+ - title: Tags
+   url: /tags
  - title: About
    url: /about
  - title: Contact
    url: /contact
+
 
 social:
    github: anirudh708
