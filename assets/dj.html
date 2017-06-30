@@ -1,0 +1,325 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <style>
+        
+                    /*.node circle {
+                    fill: rgb(168, 200, 248);
+                    stroke: grey;
+                    stroke-width: 1px;
+                    }*/
+                    
+                    .link {
+                    stroke: black;
+                    stroke-width: 1px;
+                    opacity: .2;
+                    }
+                    
+                    .label {
+                    font-family: Arial;
+                    font-size: 12px;
+                    }
+        </style>
+    </head>
+    <body>
+        <button onclick="runAlgo()">Run</button>
+        <div>
+
+        </div>
+        
+        <script src="http://d3js.org/d3.v3.min.js"></script>
+        <script>
+            Math.getDistance = function( x1, y1, x2, y2 ) {
+                
+                var xs = x2 - x1,
+                    ys = y2 - y1;		
+                xs *= xs;
+                ys *= ys;
+                
+                return Math.sqrt( xs + ys );
+            };
+            var current = null;
+            var edges = null;
+    
+            function runAlgo(){
+                if(current!==null){
+
+                    var graph = {};
+                    for(var i=0; i < 26; i++){
+                        graph[i] = []
+                    }
+                    for(var x in edges){
+                        edge = edges[x];
+                        graph[edge.source].push(edge.target);
+                        graph[edge.target].push(edge.source)
+                    }
+                    console.log(graph);
+
+
+                    var pq = new PriorityQueue();
+                    var dist = {};
+                    var prev = {};
+
+                    var starterNode = current[0].parentNode.id.split("n-")[1];
+
+                    dist[starterNode] = 0;
+
+                    for(var i = 0; i < 26 ;i++){
+                        if(i.toString()!==starterNode){
+                            dist[i] = 3000; //Yeah, this is the max
+                            prev[i] = null;
+                            pq.push(i,3000);
+                        }     
+                        else{
+                            pq.push(i,0);
+                        }          
+                    }
+                    while(pq.size()>0){
+                        var near = pq.pop();
+                        var neighbours = graph[near];
+                        neighbours.forEach(function(x){
+
+                          x1 =  parseInt(d3.select('g#n-'+x).select('circle').attr('cx'))
+                          y1 =  parseInt(d3.select('g#n-'+x).select('circle').attr('cy'))
+
+                          x2 =  parseInt(d3.select('g#n-'+near).select('circle').attr('cx'))
+                          y2 =  parseInt(d3.select('g#n-'+near).select('circle').attr('cy'))
+
+
+                            new_dist = dist[near] + Math.getDistance(x1,y1,x2,y2);
+                            if(new_dist < dist[x]){
+                                dist[x] = new_dist;
+                                prev[x] = new_dist;
+                                pq.remove(x);
+                                pq.push(x,new_dist);
+                            }
+                        });
+                        
+                    }
+
+                    console.log(dist);  
+                    window.x = dist;
+
+                var sorted = Object.keys(dist)
+                    .sort(function(a,b) { return (+dist[a] - +dist[b])})
+                .map(function(k) { return { key: k, value: dist[k] }});
+                window.x = sorted;
+                for(var i = 0; i <sorted.length; i++){
+                    var ele =sorted[i].key;
+                   d3.selectAll("#n-"+ele).select("text").text(i);
+                }
+
+                alert("nodes are ranked based on distance");
+                               
+
+                }
+                else{
+                    alert("click on a node");
+                }
+            }
+            // Ripped of PQueue
+            function PriorityQueue() {
+                this.data = []
+            }
+
+            PriorityQueue.prototype.push = function(element, priority) {
+                priority = +priority
+                for (var i = 0; i < this.data.length && this.data[i][1] < priority; i++);
+                this.data.splice(i, 0, [element, priority])
+            }
+
+            PriorityQueue.prototype.remove = function(element){
+                for(var i=0; i < this.data.length; i++){
+                    if(this.data[i][0] ==element){
+                        this.data.splice(i,1);
+                    }
+                }
+            }
+
+            PriorityQueue.prototype.pop = function() {
+                return this.data.shift()[0]
+            }
+
+            PriorityQueue.prototype.size = function() {
+                return this.data.length
+            }
+
+
+        </script>
+        
+        <script>
+              var svg = d3.select("body").append("svg")
+                            .attr("width", 800)
+                            .attr("height", 500);
+                d3.json("https://bl.ocks.org/susielu/raw/9526340/75ad984d0b3fe653baf8ddddf46857497eb787f2/graph.json",function(error, json){
+                    //console.log(json);
+                    var nodes = json.nodes.map(function(d){
+                        return {
+                            'index':d.id,
+                            'x':d.x,
+                            'y':d.y,
+                            'fixed':true,
+                            'label':d.label,
+                        }
+                    });
+
+                    var links = json.edges.map(function(l){
+                        return {
+                            'source':parseInt(l.source),
+                            'target':parseInt(l.target)
+                        }
+                    });
+
+                    edges = links.map(function(l){
+                        return {
+                            'source' : l.source,
+                            'target' : l.target
+                        }
+                    });
+
+                      var foci = [];
+                    var labelNodes = [];
+
+                    for(i=0; i < nodes.length; i ++){
+                        var center = {x: nodes[i].x, y: nodes[i].y}
+                        foci.push(center);
+                        
+                        center["label"] = nodes[i].label;
+                        center["index"] = nodes[i].index;
+                        
+                        labelNodes.push(center)
+                    }
+                    
+
+                    var force = d3.layout.force()
+                                    .nodes(nodes)
+                                    .links(links)
+      
+                    force.start();
+
+                  
+
+                    var force2 = d3.layout.force()
+                                .nodes(labelNodes)
+                                .links([])
+                                .gravity(0)
+                                .charge(-6)
+                                .on("tick", tick)
+      
+                    force2.start();
+
+
+                    svg.append("g")
+                    .attr("class", "network")
+                    .attr("transform", "translate(430, 270)");
+      
+                    var network = svg.selectAll("g.network")
+    
+                    console.log(network);
+
+                    network.append("g")
+                    .selectAll("line.link")
+                    .data(links).enter()
+                    .append("line")
+                    .attr("class", "link")
+      
+                    var link = svg.selectAll(".link")
+ 
+                    network.append("g")
+                    .attr("class", "nodes")
+                    .selectAll("g.node")
+                    .data(force.nodes())
+                    .enter()
+                    .append("svg:g")
+                    .attr("class", "node")
+                    .attr("fill",function(){
+                        return "blue";
+                    })
+                    .attr("fill-opacity",0.2)
+                    .attr("id",function(d){
+                        return "n-"+d.index;
+                    })   
+
+                    var node = svg.selectAll("g.node")
+                    
+
+                    node.on("click",function(){
+
+                        if(current!==null)
+                        current.attr("fill","blue");
+
+                        d3.select(this).selectAll("circle").attr("fill","red");
+                        current = d3.select(this).selectAll("circle");
+                    });
+
+                    node.append("svg:circle")
+                    .attr("r", function(d) { return 10; })
+                    .attr("cx", function(d) { return d.x; })
+                    .attr("cy", function(d) { return d.y; });
+
+                    node.append("text")
+	                    .attr("dx", function(d){return d.x;})
+                        .attr("dy", function(d) { return d.y; })
+                        .attr("fill","black")
+                        .attr("fill-opacity",1);
+
+                    
+                    
+                    network.append("g").attr("class", "labels")
+                    .selectAll("g.label")
+                    .data(labelNodes)
+                    .enter()
+                    .append("svg:text")
+                    .attr("class", "label")
+                    .text(function(d) {return "";})
+      
+                    var label = svg.selectAll(".labels text")
+                    
+                    function tick(test) {
+
+                        var k = .1* test.alpha;
+                        
+                        labelNodes.forEach(function(d){
+                        d.y += (labelNodes[d.index].y - d.y) * k;
+                        d.x += (labelNodes[d.index].x - d.x) * k;
+                        });
+                        
+                        // label.attr("x", function(d) { return d.x; })
+                        // .attr("y", function(d) { return d.y; });
+                
+                        link.attr("x1", function(d) { return d.source.x; })
+                            .attr("y1", function(d) { return d.source.y; })
+                            .attr("x2", function(d) { return d.target.x; })
+                            .attr("y2", function(d) { return d.target.y; });
+                    }
+                });       
+        </script>
+    </body>
+    
+</html>
+<!--
+ function Dijkstra(Graph, source):
+     dist[source] ← 0                                    // Initialization
+
+     create vertex set Q
+
+     for each vertex v in Graph:           
+         if v ≠ source
+             dist[v] ← INFINITY                          // Unknown distance from source to v
+             prev[v] ← UNDEFINED                         // Predecessor of v
+
+         Q.add_with_priority(v, dist[v])
+
+
+     while Q is not empty:                              // The main loop
+         u ← Q.extract_min()                            // Remove and return best vertex
+         for each neighbor v of u:                      // only v that is still in Q
+             alt ← dist[u] + length(u, v) 
+             if alt < dist[v]
+                 dist[v] ← alt
+                 prev[v] ← u
+                 Q.decrease_priority(v, alt)
+
+     return dist[], prev[]
+
+    -->
