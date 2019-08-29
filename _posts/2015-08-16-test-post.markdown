@@ -5,4 +5,4 @@ date:   2017-03-30
 tags: [VBA,Excel]
 ---
 
-Lately I have been fidling around some VBA in excel. VB and VBA are two terms which you will normally hear.
+I stopped fiddling with VBA.
