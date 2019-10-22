@@ -6,9 +6,8 @@ title: About Anirudh
 <div class="post">
 	<h1 class="pageTitle">About Anirudh</h1>
 	<img src="{{ '/assets/img/Beach.jpg' | prepend: site.baseurl }}" alt=""> 
-	<p class="intro">I am a software engineer with oracle india.</p>
-	<p>My intrests are Machine Learning, Statistics, NLP. </p>
-  <p>I am also a techincal literature enthusiast. I like to spend my time reading Intresting publications.</p>
+	<p class="intro">I am a software engineer at N26</p>
+	<p>My interests are Numerical Linear Algebra, Machine learning and Distributed systems</p>
   <h2>Social Media</h2>
 	<ul>
   		<li><a href="http://linkedin.com">LinkedIn</a></li>
