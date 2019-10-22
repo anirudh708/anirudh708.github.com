@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "tessellating a region with 1x2 rectangular dominoes."
-date:   2017-03-30
+date:   2019-10-22
 tags: [algorithms, math]
 ---
 
