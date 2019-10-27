@@ -10,7 +10,8 @@ markdown: kramdown
 highlighter: pygments
 paginate: 5
 
-gems: [jekyll-paginate]
+plugins:
+  - jekyll-paginate
 
 navigation:
  - title: Home
